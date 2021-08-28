@@ -27,7 +27,7 @@ SPDXObject >> licenseNames [
 
 { #category : #accessing }
 SPDXObject >> licenses [
-	" Answer a <Collection> of <CGSPDXLicense> "
+	" Answer a <Collection> of <SPDXLicense> "
 
 	^ licenses
 ]
