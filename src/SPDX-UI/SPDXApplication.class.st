@@ -18,6 +18,18 @@ SPDXApplication class >> licenses [
 		ifNil: [ Licenses := SPDXLicenseReader fetchLicenseJSON ]
 ]
 
+{ #category : #'world menu' }
+SPDXApplication class >> menuCommandOn: aBuilder [ 
+	<worldMenu> 
+	
+	(aBuilder item: #'License Selection')
+		parent: #Tools;
+		action:[ self new run ]; 
+		icon: self taskbarIcon.
+
+
+]
+
 { #category : #accessing }
 SPDXApplication >> licenses [
 	" Answer a <Collection> of <SPDXLicense> "

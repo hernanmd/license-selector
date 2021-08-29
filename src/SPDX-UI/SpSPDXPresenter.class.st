@@ -13,11 +13,11 @@ Class {
 SpSPDXPresenter class >> defaultSpec [
 
 	^ SpBoxLayout newTopToBottom
+		add: #toolbar height: self toolbarHeight + 10;
 		add: (SpPanedLayout newLeftToRight 
 			add: #licenseTable;
 			add: #licensePresenter;
 			yourself);
-		add: #toolbar height:  self toolbarHeight;
 		yourself
 ]
 
@@ -66,6 +66,23 @@ SpSPDXPresenter >> addLicenseColumns [
 			yourself)
 ]
 
+{ #category : #callbacks }
+SpSPDXPresenter >> copyLicenseTextAction [
+
+	Clipboard clipboardText: self selectedLicenseText.
+	self inform: 'Copied to clipboard'
+]
+
+{ #category : #callbacks }
+SpSPDXPresenter >> exportLicenseAction [
+	" Private - User has clicked in the Export action, ask for a file name and save "
+
+	self selectedLicenseText 
+		ifNotEmpty: [ : selectedLicense | self saveWithExtension: 'txt' ]
+		ifEmpty: [ self inform: 'Please select a license' ]
+	
+]
+
 { #category : #initialization }
 SpSPDXPresenter >> initialExtent [
  	" Private - See superimplementor's comment "
@@ -89,7 +106,10 @@ SpSPDXPresenter >> initializeLicensesTable [
 	licenseTable := self newTable
 		beResizable;
 		showColumnHeaders;
-		whenSelectionChangedDo: [ : selection | self announce: (SpSPDXLicenseChanged with: selection selectedItem) ].		
+		whenSelectionChangedDo: [ : selection | 
+			(self toolbar ifNotNil: [ : t | (t itemNamed: 'Copy') enable ]).
+			(self toolbar ifNotNil: [ : t | (t itemNamed: 'Export') enable ]).
+			self announce: (SpSPDXLicenseChanged with: selection selectedItem) ].		
 	self addLicenseColumns.
 	licenseTable	 items: self application licenses
 ]
@@ -109,15 +129,21 @@ SpSPDXPresenter >> initializeToolbar [
 	" self initializeFocus."
 
 	toolbar := self newToolbar
-		addItemRight: (SpToolbarButtonPresenter new
+		addItem: (SpToolbarButtonPresenter new
 			label: 'Copy';
 			icon: (self iconNamed: #smallCopy);
 			help: 'Copy license text';
-			action: [ 
-				Clipboard clipboardText: self selectedLicenseText.
-				self inform: 'Copied to clipboard' ];
+			action: [ self copyLicenseTextAction ];
+			disable;
 			yourself);
-		addItemRight: (SpToolbarButtonPresenter new
+		addItem: (SpToolbarButtonPresenter new
+			label: 'Export';
+			icon: (self iconNamed: #smallExport);
+			help: 'Export license text to file';
+			action: [ self exportLicenseAction ];
+			disable;
+			yourself);
+		addItem: (SpToolbarButtonPresenter new
 			label: 'Close';
 			icon: (self iconNamed: #smallQuit);
 			help: 'Close the window';
@@ -128,13 +154,11 @@ SpSPDXPresenter >> initializeToolbar [
 
 { #category : #initialization }
 SpSPDXPresenter >> initializeWindow: aWindowPresenter [
+	" Private - Set aWindowPresenter window properties "
 
-  aWindowPresenter 
-    title: self title;
-    initialExtent: self initialExtent;
-    whenClosedDo: [ ... ];
-    whenOpenedDo: [ ...];
-    whenResizingDo: [ ... ]
+	aWindowPresenter 
+		title: self title;
+		initialExtent: self initialExtent
 ]
 
 { #category : #accessing }
@@ -161,7 +185,30 @@ SpSPDXPresenter >> licenseTable: anObject [
 	licenseTable := anObject
 ]
 
-{ #category : #initialization }
+{ #category : #callbacks }
+SpSPDXPresenter >> saveLicense: selectedFile withExtension: anExtension [
+
+	selectedFile asFileReference writeStreamDo: [ :str | 
+		str
+			nextPutAll: self selectedLicenseText;
+			truncate: self selectedLicenseText size ].
+	selectedFile extension = anExtension asString ifFalse: [ 
+		[ selectedFile renameTo: selectedFile withoutExtension basename , '.' , anExtension asString ]
+		on: FileExists
+		do: [ : ex | selectedFile delete ]. ].
+	^ self
+]
+
+{ #category : #callbacks }
+SpSPDXPresenter >> saveWithExtension: anExtension [
+
+	| selectedFile |
+	selectedFile := FDSaveFileDialog new defaultName: ('LICENSE.', anExtension asString); openModal.
+	selectedFile ifNotNil: [ ^ self saveLicense: selectedFile withExtension: anExtension; yourself ].
+	^ nil
+]
+
+{ #category : #callbacks }
 SpSPDXPresenter >> selectedLicenseText [
 	" Answer a <String> with the currently selected license text "
 	

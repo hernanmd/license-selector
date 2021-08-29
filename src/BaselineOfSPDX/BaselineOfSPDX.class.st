@@ -10,15 +10,35 @@ BaselineOfSPDX >> baseline: spec [
 	spec
 		for: #(common)
 		do: [ 
-			self neoJson: spec.
+			self 
+				neoJson: spec;
+				commonUtils: spec;
+				fileDialog: spec.
 			
 			spec 
-				package: 'SPDX' 		with: [ spec requires: #('NeoJSON') ];
+				package: 'SPDX' 		with: [ spec requires: #('NeoJSON' 'CommonUtils') ];
+				package: 'SPDX-UI' 	with: [ spec requires: #('SPDX' 'FileDialog') ];
 				package: 'SPDX-Tests'	with: [ spec requires: #(SPDX) ].
 			spec 
-				group: 'Core' 						with: #('SPDX');
+				group: 'Core' 						with: #('SPDX' 'SPDX-UI');
 				group: 'Tests' 						with: #('SPDX' 'SPDX-Tests');
-				group: 'default' 					with: #('Core' 'Tests') ]
+				group: 'default' 					with: #('Core') ]
+]
+
+{ #category : #baselines }
+BaselineOfSPDX >> commonUtils: spec [ 
+
+	spec 
+		baseline: 'CommonUtils' 
+		with: [ spec repository: 'github://hernanmd/CommonUtils/repository' ].
+]
+
+{ #category : #baselines }
+BaselineOfSPDX >> fileDialog: spec [ 
+
+	spec
+		baseline: 'FileDialog'
+		with: [ spec repository: 'github://Ducasse/file-dialog/repository' ].
 ]
 
 { #category : #baselines }
