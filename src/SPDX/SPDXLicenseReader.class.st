@@ -1,23 +1,17 @@
 "
-CGSPDXLicenseReader fetchLicenseJSON
+This class only provides a couple of helper class methods to retrieve and parse licenses in JSON format. It uses the NeoJSON library.
 
-Public API and Key Messages
+Usage example:
 
-- message one   
-- message two 
-- (for bonus points) how to create instances.
+```
+SPDXLicenseReader fetchLicenseJSON.
+```
 
-   One simple example is simply gorgeous.
- 
-Internal Representation and Key Implementation Points.
-
-
-    Implementation Points
 "
 Class {
 	#name : #SPDXLicenseReader,
 	#superclass : #Object,
-	#category : #'SPDX-Core'
+	#category : #'SPDX-Parsing'
 }
 
 { #category : #accessing }
@@ -71,7 +65,7 @@ SPDXLicenseReader class >> neoJsonReaderBlock [
 		] 
 		on: NeoJSONParseError 
 		do: [ : err |
-			self informMessage: 'Parse error while reading JSON data...'.
+			self inform: 'Parse error while reading JSON data...'.
 			(NeoJSONReader fromString: entity contents) inspect ]
  		]
 ]

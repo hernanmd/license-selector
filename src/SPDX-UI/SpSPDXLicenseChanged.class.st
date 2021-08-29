@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'selectedLicense'
 	],
-	#category : #'SPDX-Core'
+	#category : #'SPDX-UI'
 }
 
 { #category : #'instance creation' }

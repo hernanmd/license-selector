@@ -1,3 +1,20 @@
+"
+This is the main application object according to Spec2 UI library requirements. The UI application can be started with
+
+```
+SPDXApplication new start.
+```
+
+Licenses are stored in class side, and retrieved only on first launch. Licenses can be updated by user-request through the UI ""Update"" button.
+
+Internal Representation and Key Implementation Points.
+
+    Instance Variables
+	spdx:		<Object>
+
+
+    Implementation Points
+"
 Class {
 	#name : #SPDXApplication,
 	#superclass : #SpApplication,

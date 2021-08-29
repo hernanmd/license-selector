@@ -1,5 +1,6 @@
 "
-Contains a list of mapped CGSPDXLicense
+Helper object used during NeoJSON parsing of licenses. It contains a list of mapped SPDXLicense.
+
 
     Instance Variables
 	licenses:		<Collection>
@@ -11,7 +12,7 @@ Class {
 	#instVars : [
 		'licenses'
 	],
-	#category : #'SPDX-Core'
+	#category : #'SPDX-Parsing'
 }
 
 { #category : #accessing }

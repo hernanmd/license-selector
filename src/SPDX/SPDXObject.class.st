@@ -1,3 +1,7 @@
+"
+Helper object to be used as a ""Read object"" during NeoJSON parsing.
+
+"
 Class {
 	#name : #SPDXObject,
 	#superclass : #Object,
@@ -6,7 +10,7 @@ Class {
 		'licenses',
 		'releaseDate'
 	],
-	#category : #'SPDX-Core'
+	#category : #'SPDX-Parsing'
 }
 
 { #category : #accessing }

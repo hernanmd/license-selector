@@ -1,3 +1,16 @@
+"
+Main Spec2 presenter for the application. It holds a toolbar for actions, the table of licenses and a presenter for displaying the selected license text and comments.
+
+Internal Representation and Key Implementation Points.
+
+    Instance Variables
+	licensePresenter:		<Object>
+	licenseTable:		<Object>
+	toolbar:		<Object>
+
+
+    Implementation Points
+"
 Class {
 	#name : #SpSPDXPresenter,
 	#superclass : #SpPresenter,
@@ -28,7 +41,7 @@ SpSPDXPresenter class >> open [
 	self new openWithSpec
 ]
 
-{ #category : #initialization }
+{ #category : #'accessing - table' }
 SpSPDXPresenter >> addLicenseColumns [
 
 	licenseTable
@@ -66,11 +79,54 @@ SpSPDXPresenter >> addLicenseColumns [
 			yourself)
 ]
 
+{ #category : #'accessing - toolbar' }
+SpSPDXPresenter >> closeButton [
+
+	^ SpToolbarButtonPresenter new
+		  label: 'Close';
+		  icon: (self iconNamed: #smallQuit);
+		  help: 'Close the window';
+		  action: [ self delete ];
+		  yourself
+]
+
+{ #category : #'accessing - toolbar' }
+SpSPDXPresenter >> copyButton [
+
+	^ SpToolbarButtonPresenter new
+		  label: 'Copy';
+		  icon: (self iconNamed: #smallCopy);
+		  help: 'Copy license text';
+		  action: [ self copyLicenseTextAction ];
+		  disable;
+		  yourself
+]
+
 { #category : #callbacks }
 SpSPDXPresenter >> copyLicenseTextAction [
 
 	Clipboard clipboardText: self selectedLicenseText.
 	self inform: 'Copied to clipboard'
+]
+
+{ #category : #'accessing - toolbar' }
+SpSPDXPresenter >> enableToolbarActions [
+	" Private - Enable button actions in the receiver's toolbar "
+
+	#('Copy' 'Export' 'Update') do: [ : btnName | 
+		(self toolbar ifNotNil: [ : t | (t itemNamed: btnName) enable ]) ]
+]
+
+{ #category : #'accessing - toolbar' }
+SpSPDXPresenter >> exportButton [
+
+	^ SpToolbarButtonPresenter new
+		  label: 'Export';
+		  icon: (self iconNamed: #smallExport);
+		  help: 'Export license text to file';
+		  action: [ self exportLicenseAction ];
+		  disable;
+		  yourself
 ]
 
 { #category : #callbacks }
@@ -100,15 +156,14 @@ SpSPDXPresenter >> initializeLicensePresenter [
 		to: self licensePresenter
 ]
 
-{ #category : #initialization }
+{ #category : #'accessing - table' }
 SpSPDXPresenter >> initializeLicensesTable [
 
 	licenseTable := self newTable
 		beResizable;
 		showColumnHeaders;
 		whenSelectionChangedDo: [ : selection | 
-			(self toolbar ifNotNil: [ : t | (t itemNamed: 'Copy') enable ]).
-			(self toolbar ifNotNil: [ : t | (t itemNamed: 'Export') enable ]).
+			self enableToolbarActions.
 			self announce: (SpSPDXLicenseChanged with: selection selectedItem) ].		
 	self addLicenseColumns.
 	licenseTable	 items: self application licenses
@@ -124,32 +179,16 @@ SpSPDXPresenter >> initializePresenters [
 	" self initializeFocus."
 ]
 
-{ #category : #initialization }
+{ #category : #'accessing - toolbar' }
 SpSPDXPresenter >> initializeToolbar [
-	" self initializeFocus."
+	" Private - Initialize the toolbar buttons "
 
 	toolbar := self newToolbar
-		addItem: (SpToolbarButtonPresenter new
-			label: 'Copy';
-			icon: (self iconNamed: #smallCopy);
-			help: 'Copy license text';
-			action: [ self copyLicenseTextAction ];
-			disable;
-			yourself);
-		addItem: (SpToolbarButtonPresenter new
-			label: 'Export';
-			icon: (self iconNamed: #smallExport);
-			help: 'Export license text to file';
-			action: [ self exportLicenseAction ];
-			disable;
-			yourself);
-		addItem: (SpToolbarButtonPresenter new
-			label: 'Close';
-			icon: (self iconNamed: #smallQuit);
-			help: 'Close the window';
-			action: [ self delete ];
-			yourself);
-		yourself.
+		           	addItem: self copyButton;
+		           	addItem: self exportButton;
+						addItem: self updateButton;
+		          	addItem: self closeButton;
+		           	yourself
 ]
 
 { #category : #initialization }
@@ -204,8 +243,11 @@ SpSPDXPresenter >> saveWithExtension: anExtension [
 
 	| selectedFile |
 	selectedFile := FDSaveFileDialog new defaultName: ('LICENSE.', anExtension asString); openModal.
-	selectedFile ifNotNil: [ ^ self saveLicense: selectedFile withExtension: anExtension; yourself ].
-	^ nil
+	selectedFile ifNotNil: [ 
+		self 
+			saveLicense: selectedFile withExtension: anExtension; 
+			yourself ].
+
 ]
 
 { #category : #callbacks }
@@ -231,4 +273,23 @@ SpSPDXPresenter >> toolbar [
 SpSPDXPresenter >> toolbar: anObject [
 
 	toolbar := anObject
+]
+
+{ #category : #initialization }
+SpSPDXPresenter >> updateButton [
+
+	^ SpToolbarButtonPresenter new
+		  label: 'Update';
+		  icon: (self iconNamed: #smallUpdate);
+		  help: 'Update licenses';
+		  action: [ self updateLicensesAction ];
+		  disable;
+		  yourself
+]
+
+{ #category : #callbacks }
+SpSPDXPresenter >> updateLicensesAction [
+	" Private - The user requested to update receiver's licenses. Update and reload. "
+	
+
 ]
