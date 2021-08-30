@@ -41,6 +41,16 @@ SpSPDXPresenter class >> open [
 	self new openWithSpec
 ]
 
+{ #category : #initialization }
+SpSPDXPresenter >> aboutSpdxLicenseSelectorText [
+
+	^ 'A Pharo application to browse, search, inspect and select software artifacts licenses.
+	
+Version: ' , self versionString , '
+URL: https://github.com/hernanmd/license-selector.
+Author: Hernán Morales Durand'
+]
+
 { #category : #'accessing - table' }
 SpSPDXPresenter >> addLicenseColumns [
 
@@ -161,6 +171,8 @@ SpSPDXPresenter >> initializeLicensesTable [
 
 	licenseTable := self newTable
 		beResizable;
+		enableSearch;
+		searchMatching: [ : licObj : pattern | self searchPatternIn: licObj pattern: pattern ];
 		showColumnHeaders;
 		whenSelectionChangedDo: [ : selection | 
 			self enableToolbarActions.
@@ -197,7 +209,8 @@ SpSPDXPresenter >> initializeWindow: aWindowPresenter [
 
 	aWindowPresenter 
 		title: self title;
-		initialExtent: self initialExtent
+		initialExtent: self initialExtent;
+		aboutText: self aboutSpdxLicenseSelectorText
 ]
 
 { #category : #accessing }
@@ -250,6 +263,16 @@ SpSPDXPresenter >> saveWithExtension: anExtension [
 
 ]
 
+{ #category : #'accessing - table' }
+SpSPDXPresenter >> searchPatternIn: licObj pattern: pattern [
+	" Answer <true> if pattern is found in any of the searchable accessors of licObj "
+	
+	^ licObj 
+		ifNotNil: [ 
+			licObj searchableAccessors anySatisfy: [ : accessor | (licObj perform: accessor) asLowercase beginsWith: (pattern trimBoth asLowercase) ] ]
+		ifNil: [ false ]
+]
+
 { #category : #callbacks }
 SpSPDXPresenter >> selectedLicenseText [
 	" Answer a <String> with the currently selected license text "
@@ -260,7 +283,7 @@ SpSPDXPresenter >> selectedLicenseText [
 { #category : #initialization }
 SpSPDXPresenter >> title [ 
 
-	^ 'SPDX License Selector'
+	^ 'SPDX License Selector - ' , self versionString
 ]
 
 { #category : #accessing }
@@ -292,4 +315,10 @@ SpSPDXPresenter >> updateLicensesAction [
 	" Private - The user requested to update receiver's licenses. Update and reload. "
 	
 
+]
+
+{ #category : #initialization }
+SpSPDXPresenter >> versionString [
+
+	^ '1.0'
 ]
