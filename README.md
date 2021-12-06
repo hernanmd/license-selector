@@ -20,7 +20,7 @@
 EpMonitor disableDuring: [ 
 	Metacello new	
 		baseline: 'SPDX';	
-		repository: 'https://github.com/hernanmd/license-selector.git';	
+		repository: 'github://hernanmd/license-selector/src';	
 		load ].
 ```
 
@@ -31,7 +31,7 @@ If you want to add the SPDX to your Metacello Baselines or Configurations, copy 
 	" ... "
 	spec
 		baseline: 'SPDX' 
-		with: [ spec repository: 'https://github.com/hernanmd/license-selector.git' ];
+		with: [ spec repository: 'github://hernanmd/license-selector/src' ];
 	" ... "
 ```
 
