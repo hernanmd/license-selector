@@ -23,7 +23,6 @@ Class {
 		'reference',
 		'detailsUrl',
 		'referenceNumber',
-		'licenseName',
 		'isDeprecatedLicenseId',
 		'seeAlso',
 		'isOsiApproved',
