@@ -15,7 +15,6 @@
 
 # Installation
 
-[//]: # (pi)
 ```smalltalk
 EpMonitor disableDuring: [ 
 	Metacello new	
